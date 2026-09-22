@@ -89,7 +89,7 @@ function pickRounds() {
 let ROUNDS = pickRounds();
 
 const ROUND_TIME = 90;
-const EMOJIS = ['😄', '😮', '😢', '😡', '❤️', '🎉'];
+const EMOJIS = ['😄', '😂', '😮', '😭', '😡', '🤔', '😎', '🥳', '👏', '👍', '❤️', '🎉'];
 const AMBIENT_LINES = [
   'Nice one!', 'Good luck everyone!', 'Almost there!', "Let's go!",
   'Hmm this one is tricky...', 'This theme is easy 😄',
@@ -127,34 +127,81 @@ function makePlayers() {
 const you = () => S.players.find((p) => p.you);
 const youIdx = () => S.players.findIndex((p) => p.you);
 
-/* ---------------- sound ---------------- */
+/* ---------------- sound (all original, synthesized) ---------------- */
 let AC = null;
 function ac() {
   if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
   if (AC.state === 'suspended') AC.resume();
   return AC;
 }
-function blip(freq, dur = 0.09, type = 'square', gain = 0.05, when = 0) {
-  if (S.muted) return;
+function note(freq, dur = 0.12, type = 'sine', gain = 0.05, when = 0, slideTo = null, force = false) {
+  if (S.muted && !force) return;
   try {
     const c = ac(), o = c.createOscillator(), g = c.createGain();
-    o.type = type; o.frequency.value = freq;
+    o.type = type;
+    o.frequency.setValueAtTime(freq, c.currentTime + when);
+    if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, c.currentTime + when + dur);
     g.gain.setValueAtTime(gain, c.currentTime + when);
     g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + when + dur);
     o.connect(g).connect(c.destination);
     o.start(c.currentTime + when); o.stop(c.currentTime + when + dur + 0.02);
   } catch (e) { /* audio unavailable */ }
 }
+function whoosh(dur = 0.25, gain = 0.05, when = 0, freq = 1200) {
+  if (S.muted) return;
+  try {
+    const c = ac(), len = Math.floor(c.sampleRate * dur), buf = c.createBuffer(1, len, c.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    const src = c.createBufferSource(); src.buffer = buf;
+    const f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq;
+    const g = c.createGain(); g.gain.value = gain;
+    src.connect(f).connect(g).connect(c.destination);
+    src.start(c.currentTime + when);
+  } catch (e) { /* audio unavailable */ }
+}
 const sfx = {
-  tap:    () => blip(620, 0.06, 'square', 0.04),
-  back:   () => blip(380, 0.06, 'square', 0.04),
-  shuffle:() => { blip(300, 0.05, 'triangle', 0.05); blip(420, 0.05, 'triangle', 0.05, 0.06); },
-  error:  () => blip(140, 0.22, 'sawtooth', 0.06),
-  coin:   () => { blip(1180, 0.07, 'sine', 0.06); blip(1560, 0.1, 'sine', 0.06, 0.07); },
-  good:   () => [523, 659, 784].forEach((f, i) => blip(f, 0.12, 'triangle', 0.06, i * 0.09)),
-  win:    () => [523, 659, 784, 1046, 1318].forEach((f, i) => blip(f, 0.16, 'triangle', 0.07, i * 0.11)),
-  bot:    () => blip(494, 0.1, 'triangle', 0.05),
+  tap:    () => note(700, 0.05, 'triangle', 0.05),
+  place:  (i) => note(500 + i * 60, 0.07, 'square', 0.045),
+  back:   () => note(320, 0.07, 'square', 0.04),
+  shuffle:() => { whoosh(0.3, 0.06, 0, 900); whoosh(0.25, 0.05, 0.12, 1600); },
+  error:  () => { note(220, 0.18, 'sawtooth', 0.06, 0, 110); note(160, 0.22, 'sawtooth', 0.05, 0.08, 80); },
+  coin:   () => { note(1250, 0.06, 'sine', 0.06); note(1650, 0.12, 'sine', 0.06, 0.06); },
+  bonus:  () => [880, 1108, 1318].forEach((f, i) => note(f, 0.1, 'triangle', 0.06, i * 0.07)),
+  good:   () => [523, 659, 784].forEach((f, i) => note(f, 0.12, 'triangle', 0.06, i * 0.09)),
+  solve:  () => { [523, 659, 784, 1046].forEach((f, i) => note(f, 0.14, 'triangle', 0.07, i * 0.08)); whoosh(0.4, 0.04, 0, 2000); },
+  win:    () => [392, 523, 659, 784, 1046, 1318].forEach((f, i) => note(f, 0.18, 'triangle', 0.07, i * 0.1)),
+  lose:   () => { note(300, 0.3, 'sawtooth', 0.05, 0, 150); note(200, 0.4, 'sawtooth', 0.05, 0.25, 100); },
+  bot:    () => { note(494, 0.09, 'triangle', 0.05); note(624, 0.12, 'triangle', 0.05, 0.09); },
+  round:  () => { whoosh(0.35, 0.05, 0, 800); note(880, 0.15, 'sine', 0.06, 0.25); },
+  tick:   () => note(1000, 0.04, 'square', 0.035),
+  emote:  () => note(950, 0.08, 'sine', 0.05, 0, 1400),
+  gift:   () => [784, 988, 1175, 1568].forEach((f, i) => note(f, 0.1, 'sine', 0.05, i * 0.06)),
 };
+
+/* original background music loop */
+let musicOn = false, musicTimer = null, musicBar = 0;
+const CHORDS = [
+  [261.63, 329.63, 392.00],
+  [196.00, 246.94, 293.66],
+  [220.00, 261.63, 329.63],
+  [174.61, 220.00, 261.63],
+];
+function playBar() {
+  const c = CHORDS[musicBar % CHORDS.length];
+  musicBar++;
+  const m = (f, d, t, g, w) => note(f, d, t, g, w, null, true);
+  c.forEach((f) => m(f, 1.7, 'triangle', 0.012));
+  [0, 1, 2, 1, 0, 2, 1, 2].forEach((n, i) => m(c[n] * 2, 0.16, 'sine', 0.018, i * 0.25));
+  m(c[0] / 2, 0.4, 'sine', 0.028);
+  m(c[0] / 2, 0.4, 'sine', 0.028, 1.0);
+}
+function setMusic(on) {
+  musicOn = on;
+  $('musicBtn').textContent = on ? '🎵' : '🎼';
+  if (on && !musicTimer) { playBar(); musicTimer = setInterval(playBar, 2000); }
+  if (!on && musicTimer) { clearInterval(musicTimer); musicTimer = null; }
+}
 
 /* ---------------- rendering ---------------- */
 function renderCards() {
@@ -164,8 +211,9 @@ function renderCards() {
     const card = document.createElement('div');
     card.className = 'pcard ' + p.pos + (p.you ? ' you' : '');
     card.id = 'card-' + i;
+    card.style.animationDelay = (i * 90) + 'ms';
     card.innerHTML =
-      '<div class="avatar" style="--ring:' + p.ring + '"><span class="crown hidden">👑</span>' + p.emoji + '</div>' +
+      '<div class="avatar" style="--ring:' + p.ring + '"><div class="bubble"></div><span class="crown hidden">👑</span>' + p.emoji + '</div>' +
       '<div class="info"><div class="pname">' + p.name + '</div>' +
       '<div class="pcoins">🪙 <span class="pcoinval">' + p.coins + '</span></div>' +
       '<button class="emote-btn" data-i="' + i + '">😄 ▾</button></div>';
@@ -183,6 +231,7 @@ function updateHUD() {
   $('roundPill').textContent = 'ROUND ' + Math.min(S.round + 1, ROUNDS.length) + '/' + ROUNDS.length;
   const m = Math.floor(S.timeLeft / 60), s = S.timeLeft % 60;
   $('timerPill').textContent = '⏱ ' + m + ':' + String(s).padStart(2, '0');
+  $('timerPill').classList.toggle('low', S.phase === 'playing' && S.timeLeft <= 10);
   S.players.forEach((p, i) => {
     const el = document.querySelector('#card-' + i + ' .pcoinval');
     if (el) el.textContent = p.coins;
@@ -197,12 +246,13 @@ function updateCrown() {
   });
 }
 
-function renderTray() {
+function renderTray(deal) {
   const tilesEl = $('tiles'), slotsEl = $('slots');
   tilesEl.innerHTML = ''; slotsEl.innerHTML = '';
   S.tiles.forEach((t, i) => {
     const b = document.createElement('button');
-    b.className = 'tile' + (t.used ? ' used' : '');
+    b.className = 'tile' + (t.used ? ' used' : '') + (deal ? ' deal' : '');
+    if (deal) b.style.animationDelay = (i * 45) + 'ms';
     b.textContent = t.letter;
     b.dataset.i = i;
     b.addEventListener('click', () => tapTile(i));
@@ -217,6 +267,7 @@ function renderTray() {
     d.addEventListener('click', () => tapSlot(s));
     slotsEl.appendChild(d);
   }
+  $('submitBtn').classList.toggle('ready', S.phase === 'playing' && S.slots.every((i) => i >= 0));
 }
 
 function renderParchment() {
@@ -232,17 +283,31 @@ function renderParchment() {
 }
 
 /* ---------------- fx ---------------- */
-function floatEmoji(emoji, cardIdx) {
+function showBubble(cardIdx, emoji) {
   const card = $('card-' + cardIdx);
   if (!card) return;
-  const r = card.getBoundingClientRect();
+  const b = card.querySelector('.bubble');
+  b.textContent = emoji;
+  b.classList.remove('show');
+  void b.offsetWidth;
+  b.classList.add('show');
+  clearTimeout(b._t);
+  b._t = setTimeout(() => b.classList.remove('show'), 1900);
+  sfx.emote();
+}
+function coinFly(fromEl) {
+  const a = fromEl.getBoundingClientRect(), b = $('hudCoins').getBoundingClientRect();
   const sp = document.createElement('span');
-  sp.className = 'float-emoji';
-  sp.textContent = emoji;
-  sp.style.left = (r.left + r.width / 2 - 20) + 'px';
-  sp.style.top = (r.top - 10) + 'px';
+  sp.className = 'coin-fly';
+  sp.textContent = '🪙';
+  sp.style.left = (a.left + a.width / 2) + 'px';
+  sp.style.top = a.top + 'px';
   $('fx').appendChild(sp);
-  setTimeout(() => sp.remove(), 1700);
+  requestAnimationFrame(() => {
+    sp.style.transform = 'translate(' + (b.left - a.left - a.width / 2) + 'px,' + (b.top - a.top) + 'px) scale(.6)';
+    sp.style.opacity = '0.2';
+  });
+  setTimeout(() => sp.remove(), 750);
 }
 function confetti(n = 70) {
   const colors = ['#fbbf24', '#f472b6', '#4db1ff', '#34d977', '#f87171', '#a78bfa'];
@@ -330,6 +395,12 @@ function startRound(i) {
   setTimeout(() => {
     $('splashOverlay').classList.add('hidden');
     if (S.phase === 'splash') S.phase = 'playing';
+    renderTray(true);
+    sfx.round();
+    if (Math.random() < 0.7) {
+      const bots = S.players.map((p, i) => i).filter((i) => !S.players[i].you);
+      showBubble(bots[Math.floor(Math.random() * bots.length)], EMOJIS[Math.floor(Math.random() * EMOJIS.length)]);
+    }
   }, 1600);
 }
 
@@ -343,6 +414,7 @@ function tick() {
       botSolves(b);
     }
   }
+  if (S.timeLeft <= 5 && S.timeLeft > 0) sfx.tick();
   if (S.timeLeft <= 0) { endRound(null); return; }
   updateHUD();
 }
@@ -353,7 +425,7 @@ function botSolves(b) {
   p.coins += b.gain;
   sfx.bot();
   addMsg(p.name, 'I found the word! 😄', p.chat);
-  floatEmoji('🎉', b.idx);
+  showBubble(b.idx, '🎉');
   if (!S.solvedBy) S.solvedBy = b.idx;
   updateHUD(); updateCrown();
 }
@@ -366,8 +438,10 @@ function tapTile(i) {
   if (s < 0) return;
   t.used = true;
   S.slots[s] = i;
-  sfx.tap();
+  sfx.place(s);
   renderTray();
+  const slotEl = document.querySelectorAll('#slots .slot')[s];
+  if (slotEl) slotEl.classList.add('pop');
 }
 
 function tapSlot(s) {
@@ -401,11 +475,12 @@ function submit() {
     you().coins += gain;
     S.lastGain = gain;
     S.phase = 'roundEnd';
-    sfx.win();
+    sfx.solve();
+    coinFly($('bottomPanel'));
     confetti(80);
     toast('+' + gain + ' 🪙  ' + word + '!');
     addMsg(you().name, 'I got it!! 🎉', you().chat);
-    floatEmoji('🎉', youIdx());
+    showBubble(youIdx(), '🥳');
     updateHUD(); updateCrown();
     setTimeout(() => showResult(youIdx()), 900);
     return;
@@ -413,7 +488,8 @@ function submit() {
   if (r.bonuses.includes(word) && !S.found.has(word)) {
     S.found.add(word);
     you().coins += 25;
-    sfx.coin();
+    sfx.bonus();
+    coinFly($('bottomPanel'));
     toast('+25 🪙 bonus word: ' + word);
     clearSlots();
     renderParchment();
@@ -427,6 +503,11 @@ function submit() {
   panel.classList.remove('shake');
   void panel.offsetWidth;
   panel.classList.add('shake');
+  document.querySelectorAll('#slots .slot.filled').forEach((el) => {
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+  });
 }
 
 function clearSlots() {
@@ -499,7 +580,7 @@ function gameOver() {
     body.appendChild(row);
   });
   $('endOverlay').classList.remove('hidden');
-  if (winner.you) { sfx.win(); confetti(120); } else sfx.good();
+  if (winner.you) { sfx.win(); confetti(120); } else { sfx.lose(); }
 }
 
 function hideOverlays() {
@@ -528,9 +609,9 @@ function pickEmoji(e) {
   $('emojiPicker').classList.add('hidden');
   sfx.tap();
   if (pickerFor === youIdx()) {
-    floatEmoji(e, youIdx());
+    showBubble(youIdx(), e);
   } else {
-    floatEmoji(e, pickerFor);
+    showBubble(pickerFor, e);
     const t = S.players[pickerFor];
     if (Math.random() < 0.5) setTimeout(() => addMsg(t.name, THANK_LINES[Math.floor(Math.random() * THANK_LINES.length)], t.chat), 900 + Math.random() * 1200);
   }
@@ -551,6 +632,7 @@ function openMenu() {
   $('menuOverlay').classList.remove('hidden');
 }
 
+$('musicBtn').addEventListener('click', () => { setMusic(!musicOn); sfx.tap(); });
 $('soundBtn').addEventListener('click', () => {
   S.muted = !S.muted;
   $('soundBtn').textContent = S.muted ? '🔇' : '🔊';
@@ -562,10 +644,11 @@ $('giftBtn').addEventListener('click', () => {
   S.giftClaimed = true;
   $('giftBtn').disabled = true;
   you().coins += 75;
-  sfx.coin();
+  sfx.gift();
+  coinFly($('giftBtn'));
   confetti(40);
   toast('🎁 Gift claimed! +75 🪙');
-  floatEmoji('🎁', youIdx());
+  showBubble(youIdx(), '🎁');
   updateHUD(); updateCrown();
 });
 
@@ -600,7 +683,7 @@ setInterval(() => {
 setInterval(() => {
   if (S.phase === 'playing' && Math.random() < 0.25) {
     const bots = S.players.map((p, i) => i).filter((i) => !S.players[i].you);
-    floatEmoji(EMOJIS[Math.floor(Math.random() * EMOJIS.length)], bots[Math.floor(Math.random() * bots.length)]);
+    showBubble(bots[Math.floor(Math.random() * bots.length)], EMOJIS[Math.floor(Math.random() * EMOJIS.length)]);
   }
 }, 14000);
 

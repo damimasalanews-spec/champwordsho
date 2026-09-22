@@ -21,8 +21,11 @@ body{
 button{font-family:inherit;font-weight:900;border:none;cursor:pointer;color:#fff}
 .hidden{display:none !important}
 
-#game{position:fixed;inset:0;overflow:hidden;
-  background:url('assets/background.png') center 62%/cover no-repeat;}
+#game{position:fixed;inset:0;overflow:hidden}
+#bg{position:absolute;inset:-4%;z-index:0;
+  background:url('assets/background.png') center 62%/cover no-repeat;
+  animation:kenburns 70s ease-in-out infinite alternate}
+@keyframes kenburns{from{transform:scale(1) translateY(0)}to{transform:scale(1.08) translateY(-1.5%)}}
 
 /* ---------- HUD ---------- */
 #hud{position:absolute;top:10px;left:0;right:0;display:flex;align-items:center;gap:12px;padding:0 16px;z-index:20}
@@ -43,17 +46,38 @@ button{font-family:inherit;font-weight:900;border:none;cursor:pointer;color:#fff
 .icon-btn:active{transform:scale(.92)}
 .coin-pill{display:flex;align-items:center;gap:8px;color:var(--gold)}
 .coin-pill .coin{font-size:18px}
+#timerPill.low{border-color:#f87171;color:#fecaca;animation:lowPulse 1s ease-in-out infinite}
+@keyframes lowPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
 
 /* ---------- player cards ---------- */
 #cards{position:absolute;inset:0;z-index:15;pointer-events:none}
-.pcard{position:absolute;display:flex;align-items:center;gap:10px;pointer-events:auto}
+.pcard{position:absolute;display:flex;align-items:center;gap:10px;pointer-events:auto;
+  animation:enter .55s cubic-bezier(.2,1.4,.4,1) backwards}
+@keyframes enter{from{opacity:0;transform:translateY(-22px) scale(.75)}to{opacity:1;transform:none}}
 .pcard .avatar{position:relative;width:66px;height:66px;border-radius:50%;flex:0 0 auto;
   background:radial-gradient(circle at 35% 30%,#ffe9d6,#f6c9a4);
   border:5px solid var(--ring,#22d3ee);
   box-shadow:0 4px 12px rgba(0,0,0,.4);
-  display:grid;place-items:center;font-size:34px}
+  display:grid;place-items:center;font-size:34px;
+  animation:bob 3.2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 .pcard .avatar .crown{position:absolute;top:-24px;left:50%;transform:translateX(-50%) rotate(-8deg);
-  font-size:24px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+  font-size:24px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4));
+  animation:sparkle 2.2s ease-in-out infinite}
+@keyframes sparkle{0%,100%{transform:translateX(-50%) rotate(-8deg) scale(1)}
+  50%{transform:translateX(-50%) rotate(5deg) scale(1.14)}}
+.bubble{position:absolute;top:-38px;left:50%;transform:translateX(-50%) scale(0);opacity:0;
+  background:#fff;border-radius:14px;padding:4px 9px;font-size:22px;line-height:1;z-index:6;
+  box-shadow:0 4px 12px rgba(0,0,0,.35);pointer-events:none}
+.bubble::after{content:'';position:absolute;bottom:-6px;left:50%;margin-left:-6px;
+  border:6px solid transparent;border-top-color:#fff;border-bottom:0}
+.bubble.show{animation:bubblePop 1.9s ease forwards}
+@keyframes bubblePop{
+  0%{transform:translateX(-50%) scale(0);opacity:0}
+  12%{transform:translateX(-50%) scale(1.18);opacity:1}
+  22%{transform:translateX(-50%) scale(1)}
+  80%{transform:translateX(-50%) scale(1);opacity:1}
+  100%{transform:translateX(-50%) scale(.6) translateY(-12px);opacity:0}}
 .pcard .info{background:linear-gradient(#12497f,#0a3160);border:2px solid #2f7dc0;border-radius:14px;
   padding:6px 14px;box-shadow:0 4px 12px rgba(0,0,0,.4)}
 .pcard .pname{font-size:16px;font-weight:900}
@@ -79,7 +103,8 @@ button{font-family:inherit;font-weight:900;border:none;cursor:pointer;color:#fff
 #parchment .p-theme{margin-top:10px;font-size:18px;color:#8a6428;letter-spacing:1px}
 #parchment .p-found{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 #parchment .p-found span{background:rgba(138,100,40,.18);border:2px solid rgba(138,100,40,.45);
-  color:#7a5518;border-radius:999px;padding:2px 12px;font-size:14px;font-weight:900}
+  color:#7a5518;border-radius:999px;padding:2px 12px;font-size:14px;font-weight:900;
+  animation:pop .25s ease}
 
 /* ---------- side buttons ---------- */
 #sideBtns{position:absolute;left:16px;bottom:130px;display:flex;flex-direction:column;gap:12px;z-index:20}
@@ -98,16 +123,23 @@ button{font-family:inherit;font-weight:900;border:none;cursor:pointer;color:#fff
 #slots,#tiles{display:flex;gap:8px;justify-content:center;min-height:54px}
 .slot{width:46px;height:54px;border-radius:10px;background:rgba(255,255,255,.12);
   border:2px dashed rgba(255,255,255,.45);display:grid;place-items:center;
-  font-size:26px;font-weight:900;color:#fff;cursor:pointer;transition:transform .1s}
+  font-size:26px;font-weight:900;color:#fff;cursor:pointer}
 .slot.filled{background:#fff;border:2px solid #d7e6f5;color:var(--ink);
   box-shadow:0 3px 0 #b9cfe4}
 .slot.filled:active{transform:scale(.94)}
+.slot.pop{animation:slotPop .3s cubic-bezier(.2,1.8,.4,1)}
+@keyframes slotPop{0%{transform:scale(.7)}60%{transform:scale(1.14)}100%{transform:scale(1)}}
+.slot.flash{animation:flashRed .45s ease}
+@keyframes flashRed{0%,100%{background:#fff}40%{background:#f87171;border-color:#b91c1c}}
 .tile{width:46px;height:54px;border-radius:10px;background:linear-gradient(#5ab6ff,#1e88f0);
   border:2px solid #8fd0ff;color:#fff;font-size:26px;font-weight:900;
   box-shadow:0 4px 0 #0b62c4,0 6px 10px rgba(0,0,0,.35);
   display:grid;place-items:center;transition:transform .08s}
 .tile:active{transform:translateY(3px);box-shadow:0 1px 0 #0b62c4}
 .tile.used{visibility:hidden;pointer-events:none}
+.tile.deal{animation:dealIn .45s cubic-bezier(.2,1.5,.4,1) backwards}
+@keyframes dealIn{from{transform:translateY(46px) scale(.4) rotate(10deg);opacity:0}
+  to{transform:none;opacity:1}}
 #panelBtns{display:flex;gap:14px;margin-top:2px}
 .btn{border-radius:999px;padding:10px 26px;font-size:17px;letter-spacing:.5px;
   box-shadow:0 4px 0 rgba(0,0,0,.3), inset 0 2px 0 rgba(255,255,255,.25);transition:transform .08s}
@@ -115,6 +147,9 @@ button{font-family:inherit;font-weight:900;border:none;cursor:pointer;color:#fff
 .btn-blue{background:linear-gradient(#3d9df3,#1976d2)}
 .btn-green{background:linear-gradient(#34d977,#16a34a)}
 .btn.big{font-size:20px;padding:14px 34px;margin-top:6px}
+#submitBtn.ready{animation:readyPulse 1s ease-in-out infinite}
+@keyframes readyPulse{0%,100%{transform:scale(1)}
+  50%{transform:scale(1.07);box-shadow:0 0 20px rgba(52,211,119,.85),0 4px 0 rgba(0,0,0,.3)}}
 
 /* ---------- chat ---------- */
 #chatPanel{position:absolute;right:14px;bottom:14px;width:330px;z-index:25;
@@ -126,6 +161,8 @@ button{font-family:inherit;font-weight:900;border:none;cursor:pointer;color:#fff
 .chat-count{background:#12497f;border-radius:999px;padding:2px 10px;font-size:13px;color:#fff}
 #chatMsgs{height:150px;overflow-y:auto;padding:0 14px 8px;display:flex;flex-direction:column;gap:6px;
   font-size:14px;font-weight:700;scrollbar-width:thin}
+#chatMsgs .msg{animation:msgIn .25s ease backwards}
+@keyframes msgIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
 #chatMsgs .msg .who{font-weight:900}
 #chatMsgs .msg.sys{color:#9fdcff;font-style:italic}
 .chat-input{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(255,255,255,.15)}
@@ -137,7 +174,8 @@ button{font-family:inherit;font-weight:900;border:none;cursor:pointer;color:#fff
 
 /* ---------- emoji picker / toast / fx ---------- */
 #emojiPicker{position:absolute;z-index:40;background:#0d3f77;border:2px solid var(--blue-edge);
-  border-radius:14px;padding:8px;display:flex;gap:6px;box-shadow:0 8px 20px rgba(0,0,0,.5)}
+  border-radius:14px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;width:236px;
+  box-shadow:0 8px 20px rgba(0,0,0,.5);animation:pop .2s ease}
 #emojiPicker button{font-size:24px;background:transparent;width:40px;height:40px;border-radius:10px}
 #emojiPicker button:hover{background:rgba(255,255,255,.15)}
 #toast{position:absolute;left:50%;top:22%;transform:translateX(-50%);z-index:45;
@@ -146,11 +184,8 @@ button{font-family:inherit;font-weight:900;border:none;cursor:pointer;color:#fff
   box-shadow:0 8px 24px rgba(0,0,0,.5);animation:pop .25s ease}
 @keyframes pop{from{transform:translateX(-50%) scale(.6);opacity:0}to{transform:translateX(-50%) scale(1);opacity:1}}
 #fx{position:absolute;inset:0;pointer-events:none;z-index:35;overflow:hidden}
-.float-emoji{position:absolute;font-size:40px;animation:floatUp 1.6s ease-out forwards;
-  filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
-@keyframes floatUp{0%{transform:translateY(0) scale(.6);opacity:0}
-  15%{opacity:1;transform:translateY(-14px) scale(1.15)}
-  100%{transform:translateY(-110px) scale(1);opacity:0}}
+.coin-fly{position:absolute;font-size:26px;z-index:60;pointer-events:none;
+  transition:transform .7s cubic-bezier(.5,-0.3,.6,1),opacity .7s ease-in}
 .confetti{position:absolute;width:10px;height:14px;top:-20px;border-radius:2px;
   animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
@@ -180,7 +215,8 @@ button{font-family:inherit;font-weight:900;border:none;cursor:pointer;color:#fff
   background:rgba(255,255,255,.08);border-radius:12px;padding:8px 16px}
 .result-body .row .pts{color:var(--gold)}
 .result-body .row.first{outline:2px solid var(--gold)}
-.splash-card{text-align:center;animation:pop2 .3s ease}
+.splash-card{text-align:center;animation:splashZoom .5s cubic-bezier(.2,1.5,.4,1)}
+@keyframes splashZoom{from{transform:scale(.3) rotate(-6deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
 #splashRound{font-size:64px;font-weight:900;letter-spacing:3px;
   text-shadow:0 5px 0 #08305c,0 10px 24px rgba(0,0,0,.6)}
 #splashTheme{font-size:26px;color:var(--gold);margin-top:8px;letter-spacing:1px}
