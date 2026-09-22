@@ -119,10 +119,10 @@ const S = {
 function makePlayers() {
   const guest = 'Guest' + Math.floor(100000 + Math.random() * 900000);
   return [
-    { name: 'Surojit',    emoji: '🧑',   ring: '#22d3ee', chat: '#fbbf24', coins: 0, pos: 'pos-tl' },
-    { name: 'Isla.Criss', emoji: '👧', ring: '#f472b6', chat: '#fb923c', coins: 0, pos: 'pos-tr' },
-    { name: guest,        emoji: '🧑🏻', ring: '#f9a8d4', chat: '#fde047', coins: 0, pos: 'pos-ml', you: true },
-    { name: 'Champ',      emoji: '🧑',   ring: '#facc15', chat: '#fbbf24', coins: 0, pos: 'pos-mr' },
+    { name: 'Surojit',    emoji: '🧑',   ring: '#22d3ee', bnr: '#0e7490', chat: '#fbbf24', coins: 0, pos: 'pos-tl' },
+    { name: 'Isla.Criss', emoji: '👧', ring: '#f472b6', bnr: '#be185d', chat: '#fb923c', coins: 0, pos: 'pos-tr' },
+    { name: guest,        emoji: '🧑🏻', ring: '#f9a8d4', bnr: '#1d4ed8', chat: '#fde047', coins: 0, pos: 'pos-ml', you: true },
+    { name: 'Champ',      emoji: '🧑',   ring: '#facc15', bnr: '#b45309', chat: '#fbbf24', coins: 0, pos: 'pos-mr' },
   ];
 }
 const you = () => S.players.find((p) => p.you);
@@ -214,10 +214,15 @@ function renderCards() {
     card.id = 'card-' + i;
     card.style.animationDelay = (i * 90) + 'ms';
     card.innerHTML =
-      '<div class="avatar" style="--ring:' + p.ring + '"><div class="bubble"></div><span class="crown hidden">👑</span>' + p.emoji + '</div>' +
-      '<div class="info"><div class="pname">' + p.name + '</div>' +
+      '<div class="plate">' +
+      '<div class="atile" style="--ring:' + p.ring + '"><div class="bubble"></div>' +
+      '<span class="rank-badge">4</span><span class="aemoji">' + p.emoji + '</span></div>' +
+      '<div class="nbanner" style="--bnr:' + p.bnr + '"><span class="nbadge">' + p.name[0].toUpperCase() + '</span>' +
+      '<span class="nname">' + p.name + '</span></div>' +
+      '<div class="racebar"><i></i></div>' +
       '<div class="pcoins">🪙 <span class="pcoinval">' + p.coins + '</span></div>' +
-      '<button class="emote-btn" data-i="' + i + '">😄 ▾</button></div>';
+      '<button class="emote-btn" data-i="' + i + '">😄 ▾</button>' +
+      '</div>';
     wrap.appendChild(card);
   });
   wrap.querySelectorAll('.emote-btn').forEach((b) => b.addEventListener('click', (e) => {
@@ -240,10 +245,18 @@ function updateHUD() {
 }
 
 function updateCrown() {
-  const best = S.players.reduce((a, p, i) => (p.coins > S.players[a].coins ? i : a), 0);
-  S.players.forEach((_, i) => {
-    const c = document.querySelector('#card-' + i + ' .crown');
-    if (c) c.classList.toggle('hidden', i !== best || S.players[best].coins === 0);
+  const order = S.players.map((_, i) => i).sort((a, b) => S.players[b].coins - S.players[a].coins);
+  const lead = S.players[order[0]].coins;
+  order.forEach((idx, r) => {
+    const card = document.querySelector('#card-' + idx);
+    if (!card) return;
+    const badge = card.querySelector('.rank-badge');
+    if (badge) {
+      badge.textContent = ['\u{1F3C6}', '\u{1F948}', '\u{1F949}', '4'][r] || String(r + 1);
+      badge.className = 'rank-badge r' + (r + 1);
+    }
+    const bar = card.querySelector('.racebar i');
+    if (bar) bar.style.width = (lead > 0 ? Math.round(S.players[idx].coins / lead * 100) : 0) + '%';
   });
 }
 
@@ -706,15 +719,38 @@ function gameOver() {
   $('endTitle').textContent = winner.you ? '🏆 You are the Champ!' : '🏆 ' + winner.name + ' wins!';
   const body = $('endBody');
   body.innerHTML = '';
-  sorted.forEach((p, i) => {
+    body.appendChild(buildPodium(sorted));
+  if (sorted[3]) {
     const row = document.createElement('div');
-    row.className = 'row' + (i === 0 ? ' first' : '');
-    row.innerHTML = '<span>' + (i === 0 ? '👑 ' : '') + (i + 1) + '. ' + (p.you ? 'You (' + p.name + ')' : p.name) +
-      '</span><span class="pts">' + p.coins + ' 🪙</span>';
+    row.className = 'row';
+    row.innerHTML = '<span>4. ' + (sorted[3].you ? 'You (' + sorted[3].name + ')' : sorted[3].name) +
+      '</span><span class="pts">' + sorted[3].coins + ' 🪙</span>';
     body.appendChild(row);
-  });
+  }
   $('endOverlay').classList.remove('hidden');
   if (winner.you) { sfx.win(); confetti(120); } else { sfx.lose(); }
+}
+
+function buildPodium(sorted) {
+  const wrap = document.createElement('div');
+  wrap.className = 'podium';
+  const seq = [
+    { p: sorted[1], cls: 'p2', n: 2 },
+    { p: sorted[0], cls: 'p1', n: 1 },
+    { p: sorted[2], cls: 'p3', n: 3 },
+  ];
+  seq.forEach((s2) => {
+    if (!s2.p) return;
+    const col = document.createElement('div');
+    col.className = 'pod ' + s2.cls;
+    col.innerHTML =
+      '<div class="pod-ava" style="--ring:' + s2.p.ring + '">' + (s2.n === 1 ? '<span class="pod-crown">👑</span>' : '') + s2.p.emoji + '</div>' +
+      '<div class="pod-name">' + (s2.p.you ? 'You' : s2.p.name.split('.')[0]) + '</div>' +
+      '<div class="pod-coins">🪙 ' + s2.p.coins + '</div>' +
+      '<div class="pod-step">' + s2.n + '</div>';
+    wrap.appendChild(col);
+  });
+  return wrap;
 }
 
 function hideOverlays() {

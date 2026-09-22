@@ -49,24 +49,54 @@ button{font-family:inherit;font-weight:900;border:none;cursor:pointer;color:#fff
 #timerPill.low{border-color:#f87171;color:#fecaca;animation:lowPulse 1s ease-in-out infinite}
 @keyframes lowPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
 
-/* ---------- player cards ---------- */
+/* ---------- player plates (coin-race lobby) ---------- */
 #cards{position:absolute;inset:0;z-index:15;pointer-events:none}
-.pcard{position:absolute;display:flex;align-items:center;gap:10px;pointer-events:auto;
+.pcard{position:absolute;display:flex;pointer-events:auto;
   animation:enter .55s cubic-bezier(.2,1.4,.4,1) backwards}
 @keyframes enter{from{opacity:0;transform:translateY(-22px) scale(.75)}to{opacity:1;transform:none}}
-.pcard .avatar{position:relative;width:66px;height:66px;border-radius:50%;flex:0 0 auto;
-  background:radial-gradient(circle at 35% 30%,#ffe9d6,#f6c9a4);
-  border:5px solid var(--ring,#22d3ee);
-  box-shadow:0 4px 12px rgba(0,0,0,.4);
-  display:grid;place-items:center;font-size:34px;
+.plate{display:flex;flex-direction:column;align-items:center;gap:6px}
+.atile{position:relative;width:80px;height:80px;border-radius:20px;
+  background:radial-gradient(circle at 35% 28%,#ffe9d6,#f3c39c);
+  border:4px solid var(--ring,#22d3ee);
+  box-shadow:0 6px 16px rgba(0,0,0,.45), inset 0 2px 0 rgba(255,255,255,.55);
+  display:grid;place-items:center;font-size:42px;
   animation:bob 3.2s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-.pcard .avatar .crown{position:absolute;top:-24px;left:50%;transform:translateX(-50%) rotate(-8deg);
-  font-size:24px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4));
-  animation:sparkle 2.2s ease-in-out infinite}
-@keyframes sparkle{0%,100%{transform:translateX(-50%) rotate(-8deg) scale(1)}
-  50%{transform:translateX(-50%) rotate(5deg) scale(1.14)}}
-.bubble{position:absolute;top:-38px;left:50%;transform:translateX(-50%) scale(0);opacity:0;
+.atile .aemoji{filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
+.rank-badge{position:absolute;top:-13px;right:-13px;z-index:3;min-width:30px;height:30px;
+  border-radius:50%;display:grid;place-items:center;padding:0 4px;
+  font-size:15px;font-weight:900;color:#fff;
+  background:linear-gradient(#3d9df3,#1668b8);border:2px solid #bfe3ff;
+  box-shadow:0 3px 8px rgba(0,0,0,.45)}
+.rank-badge.r1{background:linear-gradient(#ffd75e,#f59e0b);border-color:#fff3c4;font-size:16px;
+  animation:badgeGlow 1.6s ease-in-out infinite}
+@keyframes badgeGlow{0%,100%{box-shadow:0 3px 8px rgba(0,0,0,.45)}
+  50%{box-shadow:0 0 16px rgba(255,215,94,.9)}}
+.rank-badge.r2{background:linear-gradient(#e5e7eb,#9ca3af);border-color:#f9fafb}
+.rank-badge.r3{background:linear-gradient(#e8a06a,#b45309);border-color:#fcd9b8}
+.nbanner{display:flex;align-items:center;gap:6px;max-width:158px;
+  background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(0,0,0,.18)),var(--bnr,#e11d48);
+  border:2px solid rgba(255,255,255,.75);border-radius:999px;padding:3px 12px 3px 4px;
+  box-shadow:0 3px 9px rgba(0,0,0,.45)}
+.nbanner .nbadge{width:22px;height:22px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;
+  font-size:11px;font-weight:900;color:#fff;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.55)}
+.nbanner .nname{font-size:14px;font-weight:900;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.racebar{width:124px;height:8px;border-radius:999px;background:rgba(0,0,0,.4);overflow:hidden;
+  border:1px solid rgba(255,255,255,.4)}
+.racebar i{display:block;height:100%;width:0%;border-radius:999px;
+  background:linear-gradient(90deg,#ffe9a3,#f59e0b);transition:width .5s ease}
+.pcoins{display:flex;align-items:center;gap:5px;font-size:14px;font-weight:900;color:var(--gold);
+  background:rgba(6,33,63,.65);border:1px solid rgba(251,191,36,.55);border-radius:999px;padding:2px 11px}
+.pcard .emote-btn{width:36px;height:26px;border-radius:9px;font-size:14px;
+  background:linear-gradient(#1b5a9e,#0d3f77);border:2px solid #2f7dc0;display:inline-flex;
+  align-items:center;justify-content:center}
+.pcard .emote-btn:active{transform:scale(.92)}
+.pcard.you .atile{outline:3px solid rgba(255,255,255,.6);outline-offset:2px}
+.pcard.pos-tl{left:20%;top:5%}
+.pcard.pos-tr{right:20%;top:5%}
+.pcard.pos-ml{left:1.5%;top:30%}
+.pcard.pos-mr{right:1.5%;top:29%}
+.bubble{position:absolute;top:-40px;left:50%;transform:translateX(-50%) scale(0);opacity:0;
   background:#fff;border-radius:14px;padding:4px 9px;font-size:22px;line-height:1;z-index:6;
   box-shadow:0 4px 12px rgba(0,0,0,.35);pointer-events:none}
 .bubble::after{content:'';position:absolute;bottom:-6px;left:50%;margin-left:-6px;
@@ -78,21 +108,6 @@ button{font-family:inherit;font-weight:900;border:none;cursor:pointer;color:#fff
   22%{transform:translateX(-50%) scale(1)}
   80%{transform:translateX(-50%) scale(1);opacity:1}
   100%{transform:translateX(-50%) scale(.6) translateY(-12px);opacity:0}}
-.pcard .info{background:linear-gradient(#12497f,#0a3160);border:2px solid #2f7dc0;border-radius:14px;
-  padding:6px 14px;box-shadow:0 4px 12px rgba(0,0,0,.4)}
-.pcard .pname{font-size:16px;font-weight:900}
-.pcard .pcoins{font-size:15px;color:var(--gold);display:flex;align-items:center;gap:6px}
-.pcard .emote-btn{margin-top:4px;width:34px;height:26px;border-radius:8px;font-size:14px;
-  background:linear-gradient(#1b5a9e,#0d3f77);border:2px solid #2f7dc0;display:inline-flex;
-  align-items:center;justify-content:center;gap:2px}
-.pcard .emote-btn:active{transform:scale(.92)}
-.pcard.pos-tl{left:21%;top:8%}
-.pcard.pos-tr{right:21%;top:8%;flex-direction:row-reverse}
-.pcard.pos-tr .info{text-align:right}
-.pcard.pos-ml{left:1.5%;top:31%}
-.pcard.pos-mr{right:1.5%;top:30%;flex-direction:row-reverse}
-.pcard.pos-mr .info{text-align:right}
-.pcard.you .info{outline:2px solid rgba(255,255,255,.35)}
 
 /* ---------- parchment ---------- */
 #parchment{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);
@@ -215,6 +230,22 @@ button{font-family:inherit;font-weight:900;border:none;cursor:pointer;color:#fff
   background:rgba(255,255,255,.08);border-radius:12px;padding:8px 16px}
 .result-body .row .pts{color:var(--gold)}
 .result-body .row.first{outline:2px solid var(--gold)}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin:4px 0 14px}
+.pod{display:flex;flex-direction:column;align-items:center;gap:5px;width:98px}
+.pod-ava{position:relative;width:62px;height:62px;border-radius:16px;display:grid;place-items:center;font-size:32px;
+  background:radial-gradient(circle at 35% 28%,#ffe9d6,#f3c39c);border:4px solid var(--ring,#22d3ee);
+  box-shadow:0 5px 12px rgba(0,0,0,.4)}
+.pod-crown{position:absolute;top:-26px;left:50%;font-size:22px;animation:sparkle 2s ease-in-out infinite}
+@keyframes sparkle{0%,100%{transform:translateX(-50%) rotate(-8deg) scale(1)}
+  50%{transform:translateX(-50%) rotate(5deg) scale(1.14)}}
+.pod-name{font-size:14px;font-weight:900;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pod-coins{font-size:13px;font-weight:900;color:var(--gold)}
+.pod-step{width:100%;border-radius:10px 10px 0 0;display:grid;place-items:center;
+  font-size:20px;font-weight:900;color:#fff;border:2px solid #6cc0ff;border-bottom:none;
+  background:linear-gradient(#3d9df3,#1668b8)}
+.pod.p1 .pod-step{height:76px;background:linear-gradient(#ffd75e,#f59e0b);border-color:#fff3c4}
+.pod.p2 .pod-step{height:52px}
+.pod.p3 .pod-step{height:36px;background:linear-gradient(#e8a06a,#b45309);border-color:#fcd9b8}
 .splash-card{text-align:center;animation:splashZoom .5s cubic-bezier(.2,1.5,.4,1)}
 @keyframes splashZoom{from{transform:scale(.3) rotate(-6deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
 #splashRound{font-size:64px;font-weight:900;letter-spacing:3px;
