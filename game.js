@@ -65,7 +65,7 @@ const WORD_POOL = [
     theme: 'Winter',
     target: 'SNOWFLAKE',
     scramble: 'WOLFSKANE',
-    bonuses: ['FLAKES', 'FLAKE', 'ALONE', 'WAKE', 'FAKE', 'FAWN', 'FLEA', 'FLOE', 'SLOE', 'LOAN', 'WOLF', 'FLAN', 'KNAW', 'SNOW'],
+    bonuses: ['FLAKES', 'FLAKE', 'ALONE', 'WAKE', 'FAKE', 'FAWN', 'FLEA', 'FLOE', 'SLOE', 'LOAN', 'WOLF', 'FLAN', 'LAWN', 'SNOW'],
   },
   {
     theme: 'Animals',
@@ -73,9 +73,117 @@ const WORD_POOL = [
     scramble: 'NETHPALE',
     bonuses: ['PLANET', 'PLANE', 'LEAPT', 'HEAL', 'HEEL', 'LEAP', 'PALE', 'TALE', 'TEAL', 'NAPE', 'PANT', 'HEAT', 'HELP', 'PEAL'],
   },
+  {
+    theme: 'Sky',
+    target: 'RAINBOW',
+    scramble: 'WRAINBO',
+    bonuses: ['BRAIN', 'BROWN', 'BORN', 'BARN', 'IRON', 'RAIN', 'BROW', 'BOW', 'WAR', 'RAW', 'OAR', 'BAN', 'NAB', 'BIN', 'ROB', 'ROW', 'WIN'],
+  },
+  {
+    theme: 'Earth',
+    target: 'VOLCANO',
+    scramble: 'OCVOLAN',
+    bonuses: ['NOVA', 'OVAL', 'COAL', 'CLAN', 'COLA', 'CAN', 'VAN', 'CON'],
+  },
+  {
+    theme: 'Medieval',
+    target: 'CASTLE',
+    scramble: 'ELCAST',
+    bonuses: ['CLEAT', 'SLATE', 'LEAST', 'STEAL', 'TALES', 'TEALS', 'SALE', 'EAST', 'CAST', 'LAST', 'SALT', 'LATE', 'TALE', 'TEAL', 'ACES', 'SEAT', 'LACE', 'CASE'],
+  },
+  {
+    theme: 'Space',
+    target: 'ROCKET',
+    scramble: 'OCKRET',
+    bonuses: ['ROCK', 'CORE', 'CORK', 'TORE', 'TREK', 'COKE', 'OKER', 'TORC', 'COT', 'TOE'],
+  },
+  {
+    theme: 'Strings',
+    target: 'GUITAR',
+    scramble: 'TIARGU',
+    bonuses: ['GRIT', 'RUG', 'ART', 'TAR', 'RAT', 'RAG', 'GUT', 'TUG', 'AIR', 'TAG'],
+  },
+  {
+    theme: 'Photo',
+    target: 'CAMERA',
+    scramble: 'AMERCA',
+    bonuses: ['RACE', 'CARE', 'ACER', 'CAME', 'REAM', 'MARC', 'ARM', 'EAR', 'ERA', 'ACE', 'MAR', 'RAM', 'CAR', 'CAM', 'ARC'],
+  },
+  {
+    theme: 'Wheels',
+    target: 'BICYCLE',
+    scramble: 'ELCICYB',
+    bonuses: ['CYCLE', 'CLICY', 'BILE', 'ICE'],
+  },
+  {
+    theme: 'Rainy',
+    target: 'UMBRELLA',
+    scramble: 'LUMBAREL',
+    bonuses: ['LUMBER', 'RUMBLE', 'UMBER', 'BLAME', 'AMBLE', 'MURAL', 'RUMBA', 'BULL', 'BELL', 'RULE', 'REAL', 'BALE', 'BEAM', 'MULE', 'MALE', 'BURL', 'LURE', 'LAME'],
+  },
+  {
+    theme: 'Lunch',
+    target: 'SANDWICH',
+    scramble: 'SANDWCIH',
+    bonuses: ['WIND', 'SAND', 'HAND', 'CHIN', 'WISH', 'WAND', 'DISH', 'SWAN', 'SAID', 'DASH', 'WINS', 'AND', 'SIN'],
+  },
+  {
+    theme: 'Pirates',
+    target: 'TREASURE',
+    scramble: 'ERASURET',
+    bonuses: ['ERASE', 'TREES', 'TEARS', 'RATES', 'STARE', 'UREA', 'SEAT', 'EAST', 'REST', 'EARS', 'TRUE', 'SURE', 'STAR', 'RAT', 'ART', 'EAR'],
+  },
+  {
+    theme: 'Gems',
+    target: 'DIAMOND',
+    scramble: 'ADMONDI',
+    bonuses: ['DOMAIN', 'NOMAD', 'AMINO', 'MOAN', 'DOIN', 'DAM', 'MAD', 'MAN', 'NOD', 'AID', 'AND', 'DIN'],
+  },
+  {
+    theme: 'Insects',
+    target: 'BUTTERFLY',
+    scramble: 'TERFLYBUT',
+    bonuses: ['BUTTER', 'FLUTE', 'REBUT', 'TUBER', 'BUTTE', 'FLUB', 'TRULY', 'BURLY', 'BYTE', 'TUBE', 'BURL', 'FURY', 'LYE', 'YET', 'FUR', 'RUE', 'ELF'],
+  },
+  {
+    theme: 'Prehistoric',
+    target: 'DINOSAUR',
+    scramble: 'SAURDINO',
+    bonuses: ['SOUND', 'ROUND', 'ARSON', 'RINDS', 'RADIO', 'DINOS', 'SODA', 'SOUR', 'RAIN', 'RUIN', 'SAND', 'IRON', 'OUR', 'NOD', 'DIN'],
+  },
+  {
+    theme: 'Travel',
+    target: 'AIRPLANE',
+    scramble: 'AIRPALNE',
+    bonuses: ['PLANE', 'PANEL', 'PEARL', 'LEARN', 'PERIL', 'NEAR', 'PLAN', 'PALE', 'PAIN', 'PANE', 'NAIL', 'LINE', 'LAIR', 'RAIL', 'PINE', 'LEAN'],
+  },
+  {
+    theme: 'Celebration',
+    target: 'FIREWORKS',
+    scramble: 'FIREWROKS',
+    bonuses: ['WORKS', 'WORK', 'FIRES', 'FIRE', 'FORKS', 'FORK', 'SWORE', 'SOWER', 'SKIER', 'OWERS', 'WIRES', 'WIRE', 'ROSE', 'SORE', 'WOES', 'RISE', 'RISK'],
+  },
+  {
+    theme: 'Explorer',
+    target: 'COMPASS',
+    scramble: 'SCOMPAS',
+    bonuses: ['SCAMP', 'CAMP', 'COMP', 'MOPS', 'PASS', 'SOAP', 'SCAM', 'CAPS', 'MASS', 'MOSS', 'COP', 'SOP'],
+  },
+  {
+    theme: 'Light',
+    target: 'LANTERN',
+    scramble: 'NALTERN',
+    bonuses: ['LEARN', 'RENT', 'NEAR', 'EARN', 'TALE', 'LATE', 'TEAR', 'RATE', 'TEAL', 'REAL', 'LEAN', 'LENT', 'ANT', 'EAR', 'TEN', 'NET', 'ALE'],
+  },
+  {
+    theme: 'Summer',
+    target: 'BEACHBALL',
+    scramble: 'BEACHLLAB',
+    bonuses: ['BLEACH', 'BEACH', 'LEACH', 'CABLE', 'BABEL', 'ABLE', 'BALE', 'EACH', 'LACE', 'BELL', 'BALL', 'CALL', 'HALL', 'ALE'],
+  },
 ];
 
-const ROUND_COUNT = 5;
+const ROUND_COUNT = 30;
 
 function pickRounds() {
   const a = WORD_POOL.slice();
@@ -88,7 +196,7 @@ function pickRounds() {
 
 let ROUNDS = pickRounds();
 
-const ROUND_TIME = 90;
+const ROUND_TIME = 45;
 const EMOJIS = ['😄', '😂', '😮', '😭', '😡', '🤔', '😎', '🥳', '👏', '👍', '❤️', '🎉'];
 const AMBIENT_LINES = [
   'Nice one!', 'Good luck everyone!', 'Almost there!', "Let's go!",
@@ -104,6 +212,7 @@ const S = {
   phase: 'menu', // menu | splash | playing | roundEnd | gameOver
   mode: 'classic', // classic | sketch
   round: 0,
+  done: 0,        // rounds completed
   timeLeft: ROUND_TIME,
   tiles: [],        // {letter, used}
   slots: [],        // tile index or -1
@@ -234,7 +343,7 @@ function renderCards() {
 
 function updateHUD() {
   $('hudCoins').textContent = you().coins;
-  $('roundPill').textContent = 'ROUND ' + Math.min(S.round + 1, ROUNDS.length) + '/' + ROUNDS.length;
+  $('roundPill').textContent = 'ROUND ' + S.done + '/' + ROUNDS.length;
   const m = Math.floor(S.timeLeft / 60), s = S.timeLeft % 60;
   $('timerPill').textContent = '⏱ ' + m + ':' + String(s).padStart(2, '0');
   $('timerPill').classList.toggle('low', S.phase === 'playing' && S.timeLeft <= 10);
@@ -355,12 +464,10 @@ function flyLettersToBoard(word) {
   }, 950);
 }
 
-function announceSketch(solverIdx, reveal) {
+function announceSketch(solverIdx) {
   const name = solverIdx === youIdx() ? 'You' : S.players[solverIdx].name;
   const a = $('sketchAnnounce');
-  a.textContent = reveal
-    ? '🎉 ' + name + ' guessed it — ' + ROUNDS[S.round].target + '!'
-    : '🎉 ' + name + ' guessed the word!';
+  a.textContent = '🎉 ' + name + ' guessed it — ' + ROUNDS[S.round].target + '!';
   a.classList.remove('show');
   void a.offsetWidth;
   a.classList.add('show');
@@ -416,12 +523,12 @@ function confetti(n = 70) {
   }
 }
 let toastTimer = null;
-function toast(msg) {
+function toast(msg, ms = 1600) {
   const t = $('toast');
   t.textContent = msg;
   t.classList.remove('hidden');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.add('hidden'), 1600);
+  toastTimer = setTimeout(() => t.classList.add('hidden'), ms);
 }
 
 /* ---------------- chat ---------------- */
@@ -450,10 +557,14 @@ function botChat(line) {
 }
 
 /* ---------------- game flow ---------------- */
+let advanceTimer = null;
+
 function newGame() {
+  clearTimeout(advanceTimer);
   ROUNDS = pickRounds();
   S.players = makePlayers();
   S.round = 0;
+  S.done = 0;
   S.giftClaimed = false;
   $('giftBtn').disabled = false;
   renderCards();
@@ -473,6 +584,7 @@ function startGame(mode) {
 }
 
 function startRound(i) {
+  clearTimeout(advanceTimer);
   S.round = i;
   S.phase = 'splash';
   S.timeLeft = ROUND_TIME;
@@ -483,7 +595,7 @@ function startRound(i) {
   S.tiles = r.scramble.split('').map((ch) => ({ letter: ch, used: false }));
   S.slots = new Array(r.target.length).fill(-1);
   S.botPlans = S.players
-    .map((p, idx) => ({ idx, solve: !p.you && Math.random() < 0.8, time: 25 + Math.floor(Math.random() * 55), done: false, gain: 0 }))
+    .map((p, idx) => ({ idx, solve: !p.you && Math.random() < 0.8, time: 10 + Math.floor(Math.random() * 22), done: false, gain: 0 }))
     .filter((b) => !S.players[b.idx].you);
   $('splashRound').textContent = 'ROUND ' + (i + 1) + '/' + ROUNDS.length;
   $('splashTheme').textContent = S.mode === 'sketch' ? 'Guess the sketch!' : 'Theme: ' + r.theme;
@@ -507,7 +619,7 @@ function startRound(i) {
       const bots = S.players.map((p, i) => i).filter((i) => !S.players[i].you);
       showBubble(bots[Math.floor(Math.random() * bots.length)], EMOJIS[Math.floor(Math.random() * EMOJIS.length)]);
     }
-  }, 1600);
+  }, 1100);
 }
 
 function tick() {
@@ -521,24 +633,20 @@ function tick() {
     }
   }
   if (S.timeLeft <= 5 && S.timeLeft > 0) sfx.tick();
-  if (S.timeLeft <= 0) { endRound(null); return; }
+  if (S.timeLeft <= 0) { timeUp(); return; }
   updateHUD();
 }
 
 function botSolves(b) {
+  if (S.phase !== 'playing') return;
   const p = S.players[b.idx];
   b.gain = 80 + S.timeLeft;
   p.coins += b.gain;
   sfx.bot();
-  if (S.mode === 'sketch') {
-    addMsg(p.name, 'I guessed it! 🎉', p.chat);
-    announceSketch(b.idx, false);
-  } else {
-    addMsg(p.name, 'I found the word! 😄', p.chat);
-  }
+  addMsg(p.name, S.mode === 'sketch' ? 'I guessed it! 🎉' : 'I found the word! 😄', p.chat);
   showBubble(b.idx, '🎉');
-  if (!S.solvedBy) S.solvedBy = b.idx;
   updateHUD(); updateCrown();
+  onSolved(b.idx);
 }
 
 function tapTile(i) {
@@ -586,15 +694,13 @@ function submit() {
     const gain = 100 + S.timeLeft;
     you().coins += gain;
     S.lastGain = gain;
-    S.phase = 'roundEnd';
     sfx.solve();
     coinFly($('bottomPanel'));
     confetti(80);
-    toast('+' + gain + ' 🪙  ' + word + '!');
     addMsg(you().name, 'I got it!! 🎉', you().chat);
     showBubble(youIdx(), '🥳');
     updateHUD(); updateCrown();
-    setTimeout(() => showResult(youIdx()), 900);
+    onSolved(youIdx());
     return;
   }
   if (r.bonuses.includes(word) && !S.found.has(word)) {
@@ -627,21 +733,13 @@ function submitSketch(word, r) {
     const gain = 100 + S.timeLeft;
     you().coins += gain;
     S.lastGain = gain;
-    S.phase = 'roundEnd';
     sfx.solve();
     coinFly($('bottomPanel'));
     confetti(90);
-    toast('+' + gain + ' 🪙  ' + word + '!');
-    flyLettersToBoard(word);
-    setTimeout(() => {
-      const board = document.querySelector('.board-frame');
-      if (board) board.classList.add('celebrate');
-    }, 1000);
-    announceSketch(youIdx(), true);
     addMsg(you().name, 'I guessed it!! 🎉', you().chat);
     showBubble(youIdx(), '🥳');
     updateHUD(); updateCrown();
-    setTimeout(() => showResult(youIdx()), 1800);
+    onSolved(youIdx());
     return;
   }
   sfx.error();
@@ -662,71 +760,85 @@ function clearSlots() {
   renderTray();
 }
 
-function endRound(solverIdx) {
-  if (S.phase === 'roundEnd' || S.phase === 'gameOver') return;
+function onSolved(solverIdx) {
+  if (S.phase !== 'playing') return;
   S.phase = 'roundEnd';
-  showResult(solverIdx);
+  S.solvedBy = solverIdx;
+  S.done = S.round + 1;
+  const word = ROUNDS[S.round].target;
+  const isYou = solverIdx === youIdx();
+  toast(isYou
+    ? '+' + S.lastGain + ' 🪙  ' + word + '!'
+    : S.players[solverIdx].name + ' beat you to ' + word + '!', 1900);
+  if (S.mode === 'sketch') {
+    if (isYou) {
+      flyLettersToBoard(word);
+    } else {
+      setTimeout(() => {
+        const cap = $('sketchWord');
+        cap.textContent = word;
+        cap.classList.add('show');
+      }, 700);
+    }
+    announceSketch(solverIdx);
+    setTimeout(() => {
+      const board = document.querySelector('.board-frame');
+      if (board) board.classList.add('celebrate');
+    }, 1000);
+  }
+  updateHUD(); updateCrown();
+  advanceTimer = setTimeout(advanceRound, S.mode === 'sketch' ? 2100 : 1500);
 }
 
-function showResult(solverIdx) {
-  const r = ROUNDS[S.round];
-  const title = $('resultTitle');
-  const body = $('resultBody');
-  body.innerHTML = '';
-  if (solverIdx === null) {
-    title.textContent = "⏰ Time's up!";
-    addMsg(null, "Time's up — the word was " + r.target, null, true);
-  } else if (solverIdx === youIdx()) {
-    title.textContent = S.solvedBy === youIdx() || S.solvedBy === null ? '🎉 You solved it!' : '🎉 You found it too!';
-  } else {
-    title.textContent = '😮 ' + S.players[solverIdx].name + ' solved it first!';
+function timeUp() {
+  if (S.phase !== 'playing') return;
+  S.phase = 'roundEnd';
+  S.done = S.round + 1;
+  const word = ROUNDS[S.round].target;
+  sfx.error();
+  toast('⏰ Time up \u2014 it was ' + word, 1900);
+  addMsg(null, "Time's up \u2014 the word was " + word, null, true);
+  if (S.mode === 'sketch') {
+    const cap = $('sketchWord');
+    cap.textContent = word;
+    cap.classList.add('show');
   }
-  const row = document.createElement('div');
-  row.className = 'row first';
-  if (solverIdx === null) {
-    row.innerHTML = '<span>The word was</span><span class="pts">' + r.target + '</span>';
-  } else {
-    const pts = solverIdx === youIdx() ? S.lastGain : (S.botPlans.find((b) => b.idx === solverIdx) || { gain: 0 }).gain;
-    row.innerHTML = '<span>' + (solverIdx === youIdx() ? 'You' : S.players[solverIdx].name) +
-      ' found ' + r.target + '</span><span class="pts">+' + pts + ' 🪙</span>';
-  }
-  body.appendChild(row);
-  if (S.found.size) {
-    const frow = document.createElement('div');
-    frow.className = 'row';
-    frow.innerHTML = '<span>Your bonus words (' + S.found.size + ')</span><span class="pts">+' + (S.found.size * 25) + ' 🪙</span>';
-    body.appendChild(frow);
-  }
-  const srow = document.createElement('div');
-  srow.className = 'row';
-  srow.innerHTML = '<span>Standings</span><span class="pts">' +
-    [...S.players].sort((a, b) => b.coins - a.coins).map((p) => (p.you ? 'You' : p.name.split('.')[0]) + ' ' + p.coins).join(' · ') + '</span>';
-  body.appendChild(srow);
-  $('nextBtn').textContent = S.round + 1 < ROUNDS.length ? 'NEXT ROUND ➜' : 'SEE RESULTS 🏆';
-  $('resultOverlay').classList.remove('hidden');
+  updateHUD();
+  advanceTimer = setTimeout(advanceRound, 2100);
 }
 
-function nextRound() {
-  $('resultOverlay').classList.add('hidden');
+function advanceRound() {
+  if (S.phase === 'gameOver') return;
   if (S.round + 1 < ROUNDS.length) startRound(S.round + 1);
   else gameOver();
 }
 
 function gameOver() {
   S.phase = 'gameOver';
+  S.done = ROUNDS.length;
+  updateHUD();
   const sorted = [...S.players].sort((a, b) => b.coins - a.coins);
   const winner = sorted[0];
-  $('endTitle').textContent = winner.you ? '🏆 You are the Champ!' : '🏆 ' + winner.name + ' wins!';
+  $('endTitle').textContent = '🏆 FINAL LEADERBOARD';
+  $('endSub').textContent = (winner.you ? 'You are the Champ!' : winner.name + ' takes the crown') +
+    ' \u00B7 ' + ROUNDS.length + ' rounds';
   const body = $('endBody');
   body.innerHTML = '';
-    body.appendChild(buildPodium(sorted));
-  if (sorted[3]) {
+  body.appendChild(buildPodium(sorted));
+  const lead = sorted[0].coins || 1;
+  const medals = ['🏆', '🥈', '🥉', '4'];
+  sorted.forEach((p, i) => {
     const row = document.createElement('div');
-    row.className = 'row';
-    row.innerHTML = '<span>4. ' + (sorted[3].you ? 'You (' + sorted[3].name + ')' : sorted[3].name) +
-      '</span><span class="pts">' + sorted[3].coins + ' 🪙</span>';
+    row.className = 'lb-row' + (i === 0 ? ' top' : '') + (p.you ? ' you' : '');
+    row.style.animationDelay = (300 + i * 110) + 'ms';
+    row.innerHTML =
+      '<span class="lb-medal">' + medals[i] + '</span>' +
+      '<span class="lb-ava" style="--ring:' + p.ring + '">' + p.emoji + '</span>' +
+      '<span class="lb-name">' + (p.you ? 'You' : p.name.split('.')[0]) + '</span>' +
+      '<span class="lb-bar"><i style="width:' + Math.max(4, Math.round(p.coins / lead * 100)) + '%"></i></span>' +
+      '<span class="lb-coins">' + p.coins + ' 🪙</span>';
     body.appendChild(row);
-  }
+  });
   $('endOverlay').classList.remove('hidden');
   if (winner.you) { sfx.win(); confetti(120); } else { sfx.lose(); }
 }
@@ -754,7 +866,7 @@ function buildPodium(sorted) {
 }
 
 function hideOverlays() {
-  ['menuOverlay', 'splashOverlay', 'resultOverlay', 'endOverlay'].forEach((id) => $(id).classList.add('hidden'));
+  ['menuOverlay', 'splashOverlay', 'endOverlay'].forEach((id) => $(id).classList.add('hidden'));
 }
 
 /* ---------------- emoji picker / reactions ---------------- */
@@ -793,7 +905,6 @@ $('submitBtn').addEventListener('click', submit);
 $('playBtn').addEventListener('click', () => startGame('classic'));
 $('sketchBtn').addEventListener('click', () => startGame('sketch'));
 $('againBtn').addEventListener('click', () => { sfx.good(); newGame(); });
-$('nextBtn').addEventListener('click', () => { sfx.tap(); nextRound(); });
 $('menuBtn').addEventListener('click', () => { hideOverlays(); openMenu(); });
 $('homeBtn').addEventListener('click', () => { openMenu(); });
 $('resumeBtn').addEventListener('click', () => { hideOverlays(); });
@@ -879,4 +990,5 @@ window.__champ = {
     }
   },
   submit, startRound, newGame, startGame, setMode, renderSketch, flyLettersToBoard, announceSketch,
+  onSolved, timeUp, advanceRound, gameOver, pickRounds,
 };

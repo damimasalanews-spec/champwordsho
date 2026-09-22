@@ -20,8 +20,8 @@
     </div>
     <div class="pill mode-pill" id="modePill">CLASSIC</div>
     <div class="hud-right">
-      <div class="pill" id="roundPill">ROUND 1/3</div>
-      <div class="pill" id="timerPill">⏱ 1:30</div>
+      <div class="pill" id="roundPill">ROUND 0/30</div>
+      <div class="pill" id="timerPill">⏱ 0:45</div>
       <button class="icon-btn" id="soundBtn" title="Sound on/off">🔊</button>
       <button class="icon-btn" id="musicBtn" title="Music on/off">🎼</button>
       <div class="pill coin-pill"><span class="coin">🪙</span><span id="hudCoins">0</span></div>
@@ -89,8 +89,8 @@
       <ul class="menu-howto">
         <li>Classic: tap letters to spell the hidden word, then SUBMIT.</li>
         <li>Sketch: watch the drawing, arrange the letters, guess the word.</li>
-        <li>Shorter bonus words earn extra coins in Classic.</li>
-        <li>5 rounds per game — fastest solver takes the crown.</li>
+        <li>First correct answer ends the round — the next one starts straight away.</li>
+        <li>30 rounds of coin racing, then the final leaderboard pops up.</li>
       </ul>
       <button class="btn btn-green big" id="playBtn">▶ PLAY CLASSIC</button>
       <button class="btn btn-blue big" id="sketchBtn">🎨 PLAY SKETCH</button>
@@ -100,23 +100,17 @@
 
   <div class="overlay hidden" id="splashOverlay">
     <div class="splash-card">
-      <div id="splashRound">ROUND 1/3</div>
+      <div id="splashRound">ROUND 1/30</div>
       <div id="splashTheme">Theme: Nature</div>
     </div>
   </div>
 
-  <div class="overlay hidden" id="resultOverlay">
-    <div class="menu-card">
-      <div class="result-title" id="resultTitle">Round complete!</div>
-      <div id="resultBody" class="result-body"></div>
-      <button class="btn btn-green big" id="nextBtn">NEXT ROUND ➜</button>
-    </div>
-  </div>
-
   <div class="overlay hidden" id="endOverlay">
-    <div class="menu-card">
+    <div class="menu-card leaderboard">
+      <div class="lb-crown">👑</div>
       <div class="result-title" id="endTitle">🏆 Final results</div>
-      <div id="endBody" class="result-body"></div>
+      <div class="lb-sub" id="endSub"></div>
+      <div id="endBody" class="lb-body"></div>
       <button class="btn btn-green big" id="againBtn">▶ PLAY AGAIN</button>
       <button class="btn btn-blue big" id="menuBtn">🏠 MENU</button>
     </div>
