@@ -321,3 +321,20 @@ button{font-family:inherit;font-weight:900;border:none;cursor:pointer;color:#fff
   #parchment{width:64vw}
   #sketchBoard{width:60vw}
 }
+
+
+/* ---------------- seat cosmetics (portrait / frame / title) ----------------
+   The portrait fills the ring's opening and is masked to the ring's real hole, so
+   it meets the band exactly instead of leaving a gap on squarish openings. */
+.atile.has-art{border-color:transparent;background:none;box-shadow:none;overflow:visible}
+.atile .aface{position:absolute;inset:0;
+  -webkit-mask-image:var(--hm);mask-image:var(--hm);
+  -webkit-mask-size:100% 100%;mask-size:100% 100%;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.atile .aface img{position:absolute;left:var(--hx,25%);top:var(--hy,25%);
+  width:var(--hw,50%);height:var(--hw,50%);border-radius:22%;object-fit:cover}
+.atile .aframe{position:absolute;inset:-7%;width:114%;height:114%;object-fit:contain;
+  pointer-events:none;z-index:2}
+.atile .atitle{position:absolute;left:-16%;bottom:-34%;width:132%;object-fit:contain;
+  pointer-events:none;z-index:4;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
+

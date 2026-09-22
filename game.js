@@ -237,6 +237,82 @@ function makePlayers() {
 const you = () => S.players.find((p) => p.you);
 const youIdx = () => S.players.findIndex((p) => p.you);
 
+/* ---------------- profile bridge ----------------
+   The profile shell embeds this game and posts what each seat is wearing. The
+   art is local (copied from the profile), so seats render even if the shell is
+   slow or unreachable. Coins earned here are posted back so the shell can save
+   them - a guest has no account, so that save is the only record. */
+const FRAME_BOX = {   // frame id -> [opening box %, centre x, centre y]
+  crystal: [56.0, 0.495, 0.564], royal:   [49.6, 0.495, 0.609],
+  emerald: [55.2, 0.502, 0.552], thorn:   [48.2, 0.498, 0.509],
+  silk:    [57.4, 0.498, 0.533], pearl:   [45.7, 0.493, 0.514],
+  volt:    [53.5, 0.507, 0.519], cosmos:  [56.3, 0.507, 0.505],
+  prism:   [51.7, 0.450, 0.557],
+};
+/* bots wear their own kit so every seat shows a full look */
+/* title ids match the title art that ships with the profile: they are named
+   after the frame themes, not after the portraits */
+const BOT_KIT = [
+  { portrait: 'ninja',  frame: 'thorn',   title: 'royal'   },
+  { portrait: 'wizard', frame: 'emerald', title: 'silk'    },
+  { portrait: 'robot',  frame: 'volt',    title: 'cosmos'  },
+];
+const KIT = { portrait: 'classic', frame: 'crystal', title: 'crystal', name: '', coins: null };
+
+function kitFor(p) {
+  if (p.you) return KIT;
+  let n = 0;
+  for (const q of S.players) { if (q === p) break; if (!q.you) n++; }
+  return BOT_KIT[n % BOT_KIT.length];
+}
+function applyKit() {
+  S.players.forEach((p) => {
+    const k = kitFor(p) || {};
+    p.portrait = k.portrait || '';
+    p.frame    = k.frame    || '';
+    p.title    = k.title    || '';
+  });
+  const y = you();
+  if (y && KIT.name) y.name = KIT.name;
+}
+/* the portrait is cut to the ring's own opening, exactly as the profile does */
+function seatArt(p) {
+  if (!p.portrait) return '';
+  const f = p.frame && FRAME_BOX[p.frame] ? FRAME_BOX[p.frame] : null;
+  let h = '<span class="aface"';
+  if (f) {
+    h += ' style="--hx:' + ((f[1] - f[0] / 200) * 100).toFixed(3) + '%;' +
+         '--hy:' + ((f[2] - f[0] / 200) * 100).toFixed(3) + '%;--hw:' + f[0] + '%;' +
+         '--hm:url(assets/frames/' + p.frame + '_hole.webp)"';
+  }
+  h += '><img src="assets/avatars/' + p.portrait + '.webp" alt=""></span>';
+  if (p.frame) h += '<img class="aframe" src="assets/frames/' + p.frame + '.webp" alt="">';
+  if (p.title) h += '<img class="atitle" src="assets/titles/' + p.title + '.webp" alt="">';
+  return h;
+}
+/* every coin the player earns is reported so it survives the session */
+function creditYou(n) {
+  const y = you();
+  if (!y || !n) return;
+  y.coins += n;
+  try { parent.postMessage({ champEarn: { coins: n, result: 'round' } }, '*'); } catch (e) {}
+}
+window.addEventListener('message', function (e) {
+  const d = e && e.data;
+  if (!d || typeof d !== 'object') return;
+  const L = d.champProfile || d.champLoadout || d;
+  if (L && (L.portrait || L.frame || L.title != null || L.name || L.coins != null)) {
+    if (L.portrait) KIT.portrait = L.portrait;
+    if (L.frame)    KIT.frame    = L.frame;
+    if (L.title != null) KIT.title = L.title;
+    if (L.name)     KIT.name     = L.name;
+    if (L.coins != null) KIT.coins = +L.coins;
+    applyKit();
+    try { renderCards(); updateHUD(); } catch (err) {}
+  }
+});
+try { parent.postMessage({ champReady: true }, '*'); } catch (e) {}
+
 /* ---------------- sound (all original, synthesized) ---------------- */
 let AC = null;
 function ac() {
@@ -316,6 +392,7 @@ function setMusic(on) {
 /* ---------------- rendering ---------------- */
 function renderCards() {
   const wrap = $('cards');
+  applyKit();
   wrap.innerHTML = '';
   S.players.forEach((p, i) => {
     const card = document.createElement('div');
@@ -324,8 +401,9 @@ function renderCards() {
     card.style.animationDelay = (i * 90) + 'ms';
     card.innerHTML =
       '<div class="plate">' +
-      '<div class="atile" style="--ring:' + p.ring + '"><div class="bubble"></div>' +
-      '<span class="rank-badge">4</span><span class="aemoji">' + p.emoji + '</span></div>' +
+      '<div class="atile' + (p.portrait ? ' has-art' : '') + '" style="--ring:' + p.ring + '">' +
+      '<div class="bubble"></div><span class="rank-badge">4</span>' + seatArt(p) +
+      (p.portrait ? '' : '<span class="aemoji">' + p.emoji + '</span>') + '</div>' +
       '<div class="nbanner" style="--bnr:' + p.bnr + '"><span class="nbadge">' + p.name[0].toUpperCase() + '</span>' +
       '<span class="nname">' + p.name + '</span></div>' +
       '<div class="racebar"><i></i></div>' +
@@ -692,7 +770,7 @@ function submit() {
   if (S.mode === 'sketch') { submitSketch(word, r); return; }
   if (word === r.target) {
     const gain = 100 + S.timeLeft;
-    you().coins += gain;
+    creditYou(gain);
     S.lastGain = gain;
     sfx.solve();
     coinFly($('bottomPanel'));
@@ -705,7 +783,7 @@ function submit() {
   }
   if (r.bonuses.includes(word) && !S.found.has(word)) {
     S.found.add(word);
-    you().coins += 25;
+    creditYou(25);
     sfx.bonus();
     coinFly($('bottomPanel'));
     toast('+25 🪙 bonus word: ' + word);
@@ -731,7 +809,7 @@ function submit() {
 function submitSketch(word, r) {
   if (word === r.target) {
     const gain = 100 + S.timeLeft;
-    you().coins += gain;
+    creditYou(gain);
     S.lastGain = gain;
     sfx.solve();
     coinFly($('bottomPanel'));
@@ -925,7 +1003,7 @@ $('giftBtn').addEventListener('click', () => {
   if (S.giftClaimed || S.phase === 'menu') return;
   S.giftClaimed = true;
   $('giftBtn').disabled = true;
-  you().coins += 75;
+  creditYou(75);
   sfx.gift();
   coinFly($('giftBtn'));
   confetti(40);
