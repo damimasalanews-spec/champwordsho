@@ -102,6 +102,7 @@ const $ = (id) => document.getElementById(id);
 
 const S = {
   phase: 'menu', // menu | splash | playing | roundEnd | gameOver
+  mode: 'classic', // classic | sketch
   round: 0,
   timeLeft: ROUND_TIME,
   tiles: [],        // {letter, used}
@@ -282,6 +283,85 @@ function renderParchment() {
   });
 }
 
+/* ---------------- sketch board ---------------- */
+function renderSketch(word) {
+  const svg = $('sketchSvg');
+  const data = (window.SKETCH_DATA && window.SKETCH_DATA[word]) || window.SKETCH_DATA._default;
+  svg.innerHTML = data.join('');
+  $('sketchWord').textContent = '';
+  $('sketchWord').classList.remove('show');
+  const board = document.querySelector('.board-frame');
+  if (board) board.classList.remove('celebrate');
+  const els = [...svg.querySelectorAll('path,circle,ellipse,line,polyline,polygon,rect')];
+  els.forEach((el, i) => {
+    let len = 0;
+    try { len = el.getTotalLength ? el.getTotalLength() : 0; } catch (e) { len = 0; }
+    if (!len || !isFinite(len)) len = 320;
+    el.style.strokeDasharray = len + ' ' + len;
+    el.style.strokeDashoffset = len;
+    el.getBoundingClientRect();
+    const dur = 0.45 + Math.min(0.9, len / 420);
+    el.style.transition = 'stroke-dashoffset ' + dur.toFixed(2) + 's ease ' + (i * 0.16).toFixed(2) + 's';
+    el.style.strokeDashoffset = '0';
+  });
+}
+
+function flyLettersToBoard(word) {
+  const boardEl = document.querySelector('.board-face');
+  if (!boardEl) return;
+  const b = boardEl.getBoundingClientRect();
+  const slotEls = [...document.querySelectorAll('#slots .slot')];
+  const n = word.length;
+  const step = Math.min(40, (b.width * 0.86) / n);
+  const totalW = step * n;
+  const left0 = b.left + b.width / 2 - totalW / 2 + step / 2;
+  const topY = b.top + b.height * 0.62;
+  slotEls.forEach((el, i) => {
+    if (i >= n) return;
+    const r = el.getBoundingClientRect();
+    const sx = r.left + r.width / 2, sy = r.top + r.height / 2;
+    const s = document.createElement('span');
+    s.className = 'fly-letter';
+    s.textContent = word[i];
+    s.style.left = sx + 'px';
+    s.style.top = sy + 'px';
+    $('fx').appendChild(s);
+    const dx = (left0 + i * step) - sx;
+    const dy = topY - sy;
+    requestAnimationFrame(() => {
+      s.style.transition = 'transform .85s cubic-bezier(.35,-0.35,.45,1.35) ' + (i * 0.07).toFixed(2) + 's, opacity .3s ease ' + (0.9 + i * 0.07).toFixed(2) + 's';
+      s.style.transform = 'translate(' + dx + 'px,' + dy + 'px) translateZ(140px) rotateY(360deg) scale(1.25)';
+      s.style.opacity = '0.15';
+    });
+    setTimeout(() => s.remove(), 1500 + i * 70);
+  });
+  setTimeout(() => {
+    const cap = $('sketchWord');
+    cap.textContent = word;
+    cap.classList.add('show');
+  }, 950);
+}
+
+function announceSketch(solverIdx, reveal) {
+  const name = solverIdx === youIdx() ? 'You' : S.players[solverIdx].name;
+  const a = $('sketchAnnounce');
+  a.textContent = reveal
+    ? '🎉 ' + name + ' guessed it — ' + ROUNDS[S.round].target + '!'
+    : '🎉 ' + name + ' guessed the word!';
+  a.classList.remove('show');
+  void a.offsetWidth;
+  a.classList.add('show');
+}
+
+function setMode(mode) {
+  S.mode = mode;
+  $('modePill').textContent = mode === 'sketch' ? 'SKETCH' : 'CLASSIC';
+  const sketch = mode === 'sketch';
+  $('sketchBoard').classList.toggle('hidden', !sketch);
+  $('parchment').classList.toggle('hidden', sketch);
+}
+
+
 /* ---------------- fx ---------------- */
 function showBubble(cardIdx, emoji) {
   const card = $('card-' + cardIdx);
@@ -373,6 +453,12 @@ function newGame() {
   startRound(0);
 }
 
+function startGame(mode) {
+  setMode(mode);
+  sfx.good();
+  newGame();
+}
+
 function startRound(i) {
   S.round = i;
   S.phase = 'splash';
@@ -387,15 +473,22 @@ function startRound(i) {
     .map((p, idx) => ({ idx, solve: !p.you && Math.random() < 0.8, time: 25 + Math.floor(Math.random() * 55), done: false, gain: 0 }))
     .filter((b) => !S.players[b.idx].you);
   $('splashRound').textContent = 'ROUND ' + (i + 1) + '/' + ROUNDS.length;
-  $('splashTheme').textContent = 'Theme: ' + r.theme;
+  $('splashTheme').textContent = S.mode === 'sketch' ? 'Guess the sketch!' : 'Theme: ' + r.theme;
   $('splashOverlay').classList.remove('hidden');
   updateHUD();
   renderTray();
-  renderParchment();
+  if (S.mode === 'sketch') {
+    $('sketchAnnounce').classList.remove('show');
+    $('sketchAnnounce').textContent = '';
+    renderSketch(r.target);
+  } else {
+    renderParchment();
+  }
   setTimeout(() => {
     $('splashOverlay').classList.add('hidden');
     if (S.phase === 'splash') S.phase = 'playing';
     renderTray(true);
+    if (S.mode === 'sketch') renderSketch(r.target);
     sfx.round();
     if (Math.random() < 0.7) {
       const bots = S.players.map((p, i) => i).filter((i) => !S.players[i].you);
@@ -424,7 +517,12 @@ function botSolves(b) {
   b.gain = 80 + S.timeLeft;
   p.coins += b.gain;
   sfx.bot();
-  addMsg(p.name, 'I found the word! 😄', p.chat);
+  if (S.mode === 'sketch') {
+    addMsg(p.name, 'I guessed it! 🎉', p.chat);
+    announceSketch(b.idx, false);
+  } else {
+    addMsg(p.name, 'I found the word! 😄', p.chat);
+  }
   showBubble(b.idx, '🎉');
   if (!S.solvedBy) S.solvedBy = b.idx;
   updateHUD(); updateCrown();
@@ -470,6 +568,7 @@ function submit() {
   const word = S.slots.filter((i) => i >= 0).map((i) => S.tiles[i].letter).join('');
   if (!word) { sfx.error(); return; }
   const r = ROUNDS[S.round];
+  if (S.mode === 'sketch') { submitSketch(word, r); return; }
   if (word === r.target) {
     const gain = 100 + S.timeLeft;
     you().coins += gain;
@@ -499,6 +598,41 @@ function submit() {
   if (S.found.has(word)) toast('Already found!');
   else toast('Not a word!');
   sfx.error();
+  const panel = $('bottomPanel');
+  panel.classList.remove('shake');
+  void panel.offsetWidth;
+  panel.classList.add('shake');
+  document.querySelectorAll('#slots .slot.filled').forEach((el) => {
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+  });
+}
+
+function submitSketch(word, r) {
+  if (word === r.target) {
+    const gain = 100 + S.timeLeft;
+    you().coins += gain;
+    S.lastGain = gain;
+    S.phase = 'roundEnd';
+    sfx.solve();
+    coinFly($('bottomPanel'));
+    confetti(90);
+    toast('+' + gain + ' 🪙  ' + word + '!');
+    flyLettersToBoard(word);
+    setTimeout(() => {
+      const board = document.querySelector('.board-frame');
+      if (board) board.classList.add('celebrate');
+    }, 1000);
+    announceSketch(youIdx(), true);
+    addMsg(you().name, 'I guessed it!! 🎉', you().chat);
+    showBubble(youIdx(), '🥳');
+    updateHUD(); updateCrown();
+    setTimeout(() => showResult(youIdx()), 1800);
+    return;
+  }
+  sfx.error();
+  toast('Not it — look closer at the sketch!');
   const panel = $('bottomPanel');
   panel.classList.remove('shake');
   void panel.offsetWidth;
@@ -620,7 +754,8 @@ function pickEmoji(e) {
 /* ---------------- wiring ---------------- */
 $('shuffleBtn').addEventListener('click', shuffleTiles);
 $('submitBtn').addEventListener('click', submit);
-$('playBtn').addEventListener('click', () => { sfx.good(); newGame(); });
+$('playBtn').addEventListener('click', () => startGame('classic'));
+$('sketchBtn').addEventListener('click', () => startGame('sketch'));
 $('againBtn').addEventListener('click', () => { sfx.good(); newGame(); });
 $('nextBtn').addEventListener('click', () => { sfx.tap(); nextRound(); });
 $('menuBtn').addEventListener('click', () => { hideOverlays(); openMenu(); });
@@ -689,6 +824,7 @@ setInterval(() => {
 
 /* boot */
 S.players = makePlayers();
+setMode('classic');
 renderCards();
 updateHUD();
 renderParchment();
@@ -706,5 +842,5 @@ window.__champ = {
       if (i >= 0) tapTile(i);
     }
   },
-  submit, startRound, newGame,
+  submit, startRound, newGame, startGame, setMode, renderSketch, flyLettersToBoard, announceSketch,
 };
